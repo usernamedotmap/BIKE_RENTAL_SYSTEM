@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import {
   runElapsedUpdate,
   runOverdueCheck,
@@ -9,7 +9,7 @@ import { ENV } from "../config/env";
 
 const conRoutes = Router();
 
-conRoutes.get("/execute-checks", async (req, res) => {
+conRoutes.get("/execute-checks", async (req: Request, res: Response) => {
   if (req.headers["x-cron-key"] !== ENV.CRON_SECRET_KEY) {
     return res.status(401).send("Unauthorized");
   }
