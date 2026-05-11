@@ -25,8 +25,8 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
 
-
     "@velorent/shared": "^1.0.0",
+
     "axios": "^1.13.6",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
