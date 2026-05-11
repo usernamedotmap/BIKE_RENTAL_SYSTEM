@@ -21,8 +21,8 @@ export const connectSocket = (): Socket => {
     transports: ["websocket", "polling"],
     autoConnect: true,
     reconnection: true,
-    reconnectionAttempts: 5,
-    reconnectionDelay: 2000,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 1000,
 
     // send token to header
     auth: {

@@ -23,6 +23,7 @@ import { initCronJobs } from "./services/cron.service";
 import adminRoutes from "./routes/admin.route";
 import { initSocket } from "./config/socket";
 import notificationRoutes from "./routes/notificationEvent.route";
+import conRoutes from "./routes/cron.route";
 
 const app = express();
 const PATH = ENV.BASE_PATH;
@@ -83,6 +84,8 @@ app.use(`${PATH}/reservation`, reservationRoutes);
 app.use(`${PATH}/payment`, paymentRoutes);
 // notification
 app.use(`${PATH}/notifications`, notificationRoutes)
+// cron
+app.use(`${PATH}/cron`, conRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({

@@ -4,7 +4,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useNotificationStore } from "@/stores/notification.store";
 import { DBNotification, SocketNotification } from "@/types/notification.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { join } from "path";
+
 import { useEffect } from "react";
 
 // fetch notificaion from DB on moutn
