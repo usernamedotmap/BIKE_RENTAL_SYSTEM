@@ -9,7 +9,8 @@
   "scripts": {
     "build": "npm run build --workspace=packages/shared && npm run build --workspace=apps/backend",
     "build:shared":  "npm run build --workspace=packages/shared",
-    "build:backend": "npm run build --workspace=apps/backend"
+    "build:backend": "npm run build --workspace=apps/backend",
+    "build:web": "npm run build --workspace=apps/web"
   },
 
   "devDependencies": {
