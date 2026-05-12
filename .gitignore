@@ -16,7 +16,7 @@ auth_config.json
 
 # --- TypeScript & Compilation ---
 # Ignore the compiled output (JavaScript) and TS metadata
-dist/
+
 build/
 out/
 *.tsbuildinfo
