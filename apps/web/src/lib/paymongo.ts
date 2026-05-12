@@ -5,7 +5,7 @@ const IS_PROD = import.meta.env.VITE_NODE_ENV;
 
 // public key her
 const getAuthHeader = () => {
-  const key = IS_PROD
+  const key = IS_PROD === "development"
     ? import.meta.env.VITE_PAYMONGO_TEST_PUBLIC_KEY
     : import.meta.env.VITE_PAYMONGO_PUBLIC_KEY;
   return `Basic ${btoa(`${key}:`)}`;
