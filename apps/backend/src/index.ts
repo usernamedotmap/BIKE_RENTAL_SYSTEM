@@ -34,7 +34,7 @@ app.use(helmetConfig);
 // cors here
 app.use(
   cors({
-    origin: ENV.IS_PROD ? "" : ORIGIN,
+    origin: ORIGIN,
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
@@ -67,6 +67,7 @@ app.use(hppProtection);
 app.use(requestSizeLimiter);
 
 // global rate litmiter
+app.set("trust proxy", 1);
 app.use(globalLimiter);
 
 //csrf protection
