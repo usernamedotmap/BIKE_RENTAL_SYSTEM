@@ -22,6 +22,12 @@ out/
 *.tsbuildinfo
 tsconfig.tsbuildinfo
 
+
+
+# add these exceptions below it:
+!packages/shared/dist/
+!packages/shared/dist/**
+
 # --- React Specific ---
 # Production build folder and logs
 /build
