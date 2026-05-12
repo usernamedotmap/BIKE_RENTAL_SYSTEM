@@ -10,12 +10,9 @@
     "build": "npm run build --workspace=packages/shared && npm run build --workspace=apps/backend",
     "build:shared":  "npm run build --workspace=packages/shared",
     "build:backend": "npm run build --workspace=apps/backend",
-    "build:web": "npm run build --workspace=apps/web"
+    "build:web":     "npm run build --workspace=packages/shared && npm run build --workspace=@velorent/web"
   },
-
   "devDependencies": {
     "turbo": "^2.8.14"
   }
 }
-
-
