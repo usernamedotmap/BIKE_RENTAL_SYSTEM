@@ -1,5 +1,4 @@
 import { ENV } from "../config/env";
-
 import { sendSms } from "../config/Iprogsms";
 import { Notification } from "../models";
 
@@ -61,5 +60,3 @@ export const retryFailedNotifications = async (): Promise<void> => {
     { $set: { status: "pending", error: null } },
   );
 };
-
-
