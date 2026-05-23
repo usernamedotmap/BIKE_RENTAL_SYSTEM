@@ -1,0 +1,25 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# copy
+COPY package*.json ./
+COPY packages/shared/package*.json ./packages/shared/
+COPY apps/backend/package*.json ./apps/backend/
+
+# install all dependencies
+RUN npm install
+
+
+# copy source
+COPY packages/shared ./packages/shared
+COPY apps/backend ./apps/backend
+
+#build shared package then backend
+RUN npm run build --workspace=@velorent/shared 2>/dev/null || true
+RUN npm run build --workspace=backend
+
+
+EXPOSE 4000
+
+CMD ["node", "apps/backend/dist/index.js"]

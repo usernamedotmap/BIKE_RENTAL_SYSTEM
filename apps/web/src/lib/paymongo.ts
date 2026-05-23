@@ -5,9 +5,11 @@ const IS_PROD = import.meta.env.VITE_NODE_ENV;
 
 // public key her
 const getAuthHeader = () => {
-  const key = IS_PROD
-    ? import.meta.env.VITE_PAYMONGO_TEST_PUBLIC_KEY
-    : import.meta.env.VITE_PAYMONGO_PUBLIC_KEY;
+  const key = import.meta.env.VITE_PAYMONGO_PUBLIC_KEY;
+
+  if (!key) {
+    console.log('[PAYMONGO] VITE_PAYMONGO_TEST_PUBLIC_KEY is not set. Please set it in your environment variables.');
+  }
   return `Basic ${btoa(`${key}:`)}`;
 };
 
@@ -51,7 +53,7 @@ export const createMayaPaymentMethod = async (billing: BillingDetails) => {
         },
       },
     },
-  })
+  });
   return data.data.id as string;
 };
 

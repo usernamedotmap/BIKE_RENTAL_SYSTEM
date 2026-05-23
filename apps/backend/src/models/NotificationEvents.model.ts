@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
 export type DashboardNotificationEvent =
   | "new_reservation"
@@ -11,7 +11,7 @@ export type DashboardNotificationEvent =
 
 export type NotificationRecipientRole = "admin" | "operator";
 
-export interface InotificationEvent extends Document {
+export interface InotificationEvent extends  Document {
   recipientRole: NotificationRecipientRole;
   recipientId?: mongoose.Types.ObjectId;
   event: DashboardNotificationEvent;

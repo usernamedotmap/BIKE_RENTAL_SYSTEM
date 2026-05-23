@@ -13,13 +13,16 @@ export const connectSocket = (): Socket => {
     return match ? decodeURIComponent(match.split("=")[1]) : null;
   };
 
+  console.log("[SOCKET] Cookie token found:", !!getTokenFromCookie());
+  console.log("[SOCKET] All cookies:", document.cookie);
+
   socket = io(import.meta.env.VITE_API_SOCKET_URL ?? "http://localhost:4000", {
     withCredentials: true,
     transports: ["websocket", "polling"],
     autoConnect: true,
     reconnection: true,
-    reconnectionAttempts: 5,
-    reconnectionDelay: 2000,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 1000,
 
     // send token to header
     auth: {

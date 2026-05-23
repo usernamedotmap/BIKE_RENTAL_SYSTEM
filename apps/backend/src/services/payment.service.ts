@@ -130,9 +130,8 @@ export const verifyWebhookSignature = async (
 ): Promise<boolean> => {
   try {
     // PayMongo signature format: "t=timestamp,te=hash,li=hash"
-    const isProd = ENV.IS_PROD
-      ? ENV.PAYMONGO_WEBHOOK_SECRET
-      : ENV.TEST_PAYMONGO_WEBHOOK_SECRET;
+    const secretKey = ENV.PAYMONGO_WEBHOOK_SECRET;
+
     const parts = signature.split(",");
     const timestamp = parts.find((p) => p.startsWith("t="))?.split("=")[1];
     const hash = parts.find((p) => p.startsWith("te="))?.split("=")[1];
@@ -144,7 +143,7 @@ export const verifyWebhookSignature = async (
 
     //compute expected signature
     const expected = crypto
-      .createHmac("sha256", isProd)
+      .createHmac("sha256", secretKey)
       .update(singedPayload)
       .digest("hex");
 

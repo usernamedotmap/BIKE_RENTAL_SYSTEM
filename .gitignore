@@ -16,11 +16,18 @@ auth_config.json
 
 # --- TypeScript & Compilation ---
 # Ignore the compiled output (JavaScript) and TS metadata
-dist/
+apps/web/dist/
+apps/backend/dist/
 build/
 out/
 *.tsbuildinfo
 tsconfig.tsbuildinfo
+
+
+
+# add these exceptions below it:
+!packages/shared/dist/
+!packages/shared/dist/**
 
 # --- React Specific ---
 # Production build folder and logs

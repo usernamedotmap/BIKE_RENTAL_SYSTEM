@@ -1,10 +1,17 @@
 import axios from "axios";
 import { ENV } from "./env";
 
-const isProd = ENV.IS_PROD
-  ? ENV.PAYMONGO_SECRET_KEY
-  : ENV.TEST_PAYMONGO_SECRET_KEY;
-const encoded = Buffer.from(`${isProd}:`).toString("base64");
+// const isProd = ENV.IS_PROD
+//   ? ENV.TEST_PAYMONGO_SECRET_KEY
+//   : ENV.TEST_PAYMONGO_SECRET_KEY;
+
+const SECRET_KEY = ENV.PAYMONGO_SECRET_KEY;
+
+if (!SECRET_KEY) {
+  console.log('[PAYMONGO] PAYMONGO_SECRET_KEY is not set. Please set it in your environment variables.');
+}
+
+const encoded = Buffer.from(`${SECRET_KEY}:`).toString("base64");
 
 export const paymongoClient = axios.create({
   baseURL: "https://api.paymongo.com/v1",
