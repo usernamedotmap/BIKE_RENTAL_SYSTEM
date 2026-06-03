@@ -57,7 +57,7 @@ export default function PaymentModal({
 
     const getQRPhImageUrl = (nextAction: any) => {
         return (
-            nextAction?.qr_code?.image_url ??
+            nextAction?.code?.image_url ??
             nextAction?.qr_code?.image_url ??
             nextAction?.image_url ??
             null
