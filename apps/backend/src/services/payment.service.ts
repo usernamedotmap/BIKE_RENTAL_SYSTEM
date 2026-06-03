@@ -74,17 +74,13 @@ export const initializePayment = async (
   }
 
   // create paymongo payment intent -----
-  const paymentMethodMap: Record<string, string[]> = {
-    gcash: ["gcash"],
-    paymaya: ["paymaya"],
-    card: ["card"],
-  };
+ const allowedMethods = ENV.IS_PROD ? ["qrph"] : ["gcash", "paymaya", "card", "qrph"];
 
   const response = await paymongoClient.post("/payment_intents", {
     data: {
       attributes: {
         amount: reservation.baseCost,
-        payment_method_allowed: ["gcash", "paymaya", "card", "qrph"], // for now allow all methods - let user choose in paymongo UI
+        payment_method_allowed: allowedMethods, // for now allow all methods - let user choose in paymongo UI
         currency: "PHP",
         description: `VeloRent booking ${reservationId}`,
         statement_descriptor: "VELORENT", 

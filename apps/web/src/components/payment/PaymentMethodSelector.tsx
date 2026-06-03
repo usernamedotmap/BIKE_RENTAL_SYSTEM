@@ -1,6 +1,8 @@
 import { cn } from "@/lib/utils";
 
 
+const IS_PROD = import.meta.env.VITE_NODE_ENV === "production";
+
 export type PaymentMethod = 'gcash' | 'paymaya' | 'card' | 'qrph';
 
 interface Props {
@@ -11,51 +13,55 @@ interface Props {
 
 const METHODS = [
     {
-        id: 'qrph' as PaymentMethod,
-        label: 'QR Ph',
-        emoji: '📱',
-        color: 'hover:border-blue-400',
-        active: 'border-blue-500 bg-blue-50',
-        desc: 'GCash, Maya, BPI + 30 banks',
+        id: "qrph" as PaymentMethod,
+        label: "QR Ph",
+        emoji: "📱",
+        color: "hover:border-blue-400",
+        active: "border-blue-500 bg-blue-50",
+        desc: "GCash, Maya, BPI + 30 banks",
         available: true,
         badge: null,
     },
-    {
-        id: 'gcash' as PaymentMethod,
-        label: 'GCash',
-        emoji: '💙',
-        color: 'hover:border-blue-400',
-        active: 'border-blue-500 bg-blue-50',
-        desc: 'Pay via Gcash app',
-        available: true,
-        badge: 'Test only',
-    },
-    {
-        id: 'paymaya' as PaymentMethod,
-        label: 'Maya',
-        emoji: '💚',
-        color: 'hover:border-green-400',
-        active: 'border-green-500 bg-green-50',
-        desc: 'Pay via Maya app',
-        available: true,
-        badge: 'Test only'
-    },
-    {
-        id: 'card' as PaymentMethod,
-        label: 'Card',
-        emoji: '💳',
-        color: 'hover:border-[hsl(var(--primary)/0.5)]',
-        active: 'border-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.05)]',
-        desc: 'Visa / Mastercard',
-        available: true,
-        badge: null
-    },
+    ...(!IS_PROD
+        ? [
+            {
+                id: "gcash" as PaymentMethod,
+                label: "GCash",
+                emoji: "💙",
+                color: "hover:border-blue-400",
+                active: "border-blue-500 bg-blue-50",
+                desc: "Pay via GCash app",
+                available: true,
+                badge: "Test only",
+            },
+            {
+                id: "paymaya" as PaymentMethod,
+                label: "Maya",
+                emoji: "💚",
+                color: "hover:border-green-400",
+                active: "border-green-500 bg-green-50",
+                desc: "Pay via Maya app",
+                available: true,
+                badge: "Test only",
+            },
+            {
+                id: "card" as PaymentMethod,
+                label: "Card",
+                emoji: "💳",
+                color: "hover:border-[hsl(var(--primary)/0.5)]",
+                active: "border-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.05)]",
+                desc: "Visa / Mastercard",
+                available: true,
+                badge: "Test only",
+            },
+        ]
+        : []),
 ];
 
 export default function PaymentMethodSelector({ selected, onSelect }: Props) {
     return (
         <div className="space-y-3">
-            <div className="grid grid-cols-3 gap-3">
+            <div className={IS_PROD ? "grid grid-cols-1 gap-3" : "grid grid-cols-2 sm:grid-cols-4 gap-3"}>
                 {METHODS.map(({ id, label, emoji, color, active, desc, available, badge }) => (
                     <button
                         key={id}
@@ -90,13 +96,14 @@ export default function PaymentMethodSelector({ selected, onSelect }: Props) {
             </div>
 
             {/* sanboax */}
-            <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-2xl px-3 py-2.5 text-amber-700">
-                <span className="shrink-0">🧪</span>
-                <p>
-                    <strong>Gcash & Maya</strong> are in test mode - use  registered test number only.
-                    <strong> QR Ph</strong> and <strong>Card</strong> are live.
-                </p>
-            </div>
+            {!IS_PROD && (
+                <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-2xl px-3 py-2.5 text-amber-700">
+                    <span className="shrink-0">🧪</span>
+                    <p>
+                        <strong>GCash, Maya, Card, and QR Ph</strong> are using PayMongo test mode.
+                    </p>
+                </div>
+            )}
         </div>
     );
 }

@@ -1,14 +1,14 @@
 import axios from "axios";
 
 const PAYMONGO_BASE = "https://api.paymongo.com/v1";
-const IS_PROD = import.meta.env.VITE_NODE_ENV;
+
 
 // public key her
 const getAuthHeader = () => {
   const key = import.meta.env.VITE_PAYMONGO_PUBLIC_KEY;
 
   if (!key) {
-    console.log('[PAYMONGO] VITE_PAYMONGO_TEST_PUBLIC_KEY is not set. Please set it in your environment variables.');
+     throw new Error("[PAYMONGO] VITE_PAYMONGO_PUBLIC_KEY is not set.");
   }
   return `Basic ${btoa(`${key}:`)}`;
 };
