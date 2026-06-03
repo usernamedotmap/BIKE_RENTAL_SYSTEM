@@ -17,7 +17,7 @@ export const getMqttClient = (): mqtt.MqttClient => {
   });
 
   client.on("connect", () => {
-    console.log("MQTT connected to HiveMQ");
+    console.log("MQTT connected to EMQX Cloud");
 
     // subscribe to device status
     client!.subscribe("velorent/device/+/heartbeat");
