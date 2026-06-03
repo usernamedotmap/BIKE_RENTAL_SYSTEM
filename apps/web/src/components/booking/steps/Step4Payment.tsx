@@ -211,9 +211,7 @@ export default function Step4Payment({ setIsIntentionallyLeaving }: { setIsInten
                     </p>
                     <div className="flex justify-center gap-3">
                         {[
-                            { emoji: '💙', label: 'GCash' },
-                            { emoji: '💚', label: 'Maya' },
-                            { emoji: '💳', label: 'Visa/MC' },
+                            
                             { emoji: '📱', label: 'QR Ph' },
                         ].map(({ emoji, label }) => (
                             <div

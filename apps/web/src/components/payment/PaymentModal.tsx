@@ -54,6 +54,16 @@ export default function PaymentModal({
     const returnUrl = `${window.location.origin}/reservations/${reservationId}?payment=success`;
     const failUrl = `${window.location.origin}/reservations/${reservationId}?payment=failed`;
 
+
+    const getQRPhImageUrl = (nextAction: any) => {
+        return (
+            nextAction?.qr_code?.image_url ??
+            nextAction?.qr_code?.image_url ??
+            nextAction?.image_url ??
+            null
+        );
+    };
+
     // poll intent until resoleved
     const pollIntentStatus = useCallback(async () => {
         setStep('processing');
@@ -75,29 +85,40 @@ export default function PaymentModal({
             try {
                 const intent = await retrievePaymentIntent(intentId, clientKey);
                 const status = intent.attributes.status;
+                const next = intent.attributes.next_action;
 
-                if (status === 'succeeded') {
-                    setStep('success');
+                if (status === "succeeded") {
+                    setStep("success");
                     onSuccess();
-                } else if (status === 'awaiting_next_action') {
-                    // 3DS neeeded - show ifreame
-                    const url = intent.attributes.next_action?.redirect?.url;
-                    if (url) {
-                        setThreeDsUrl(url);
-                        setStep('3ds');
-                    } else {
-                        await poll();
-                    }
-                } else if (status === 'processing') {
-                    await poll();
-                } else {
-                    setStep('failed');
-                    setErrorMsg(
-                        intent.attributes.last_payment_error?.failed_message ??
-                        'Payment was not successful.'
-                    );
+                    return;
                 }
-            } catch {
+
+                if (status === "processing") {
+                    await poll();
+                    return;
+                }
+
+                if (status === "awaiting_next_action") {
+                    const redirectUrl = next?.redirect?.url;
+                    if (redirectUrl) {
+                        setThreeDsUrl(redirectUrl);
+                        setStep("3ds");
+                        return;
+                    }
+
+                    const qrImage = getQRPhImageUrl(next);
+                    if (qrImage) {
+                        setEWalletUrl(qrImage);
+                        setStep("qrph");
+                        return;
+                    }
+
+                    setStep("failed");
+                    setErrorMsg( intent.attributes.last_payment_error?.failed_message ??  "Payment was not successful.");
+                }
+            } catch (err) {
+                console.log("[PAYMENT] Poll failed:", err);
+
                 await poll();
             }
         };
@@ -165,7 +186,7 @@ export default function PaymentModal({
             }
 
             if (status === 'awaiting_next_action' && next) {
-                const qrImage = next.qr_code?.image_url ?? next.image_url;
+                const qrImage = getQRPhImageUrl(next);
                 if (qrImage) {
                     setEWalletUrl(qrImage);
                     setStep('qrph');
@@ -173,7 +194,10 @@ export default function PaymentModal({
                 }
             }
 
-            await pollIntentStatus();
+            setErrorMsg('Failed to generate QR code. Please try again or choose a different payment method.');
+       
+            return;
+
         } catch (err: any) {
             setErrorMsg(err?.response?.data?.errors?.[0]?.detail ?? 'QR Ph failed.');
         } finally {

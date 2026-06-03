@@ -55,7 +55,7 @@ const METHODS = [
                 badge: "Test only",
             },
         ]
-        : []),
+        : []),  
 ];
 
 export default function PaymentMethodSelector({ selected, onSelect }: Props) {
