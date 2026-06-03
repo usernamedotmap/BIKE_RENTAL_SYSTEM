@@ -114,7 +114,7 @@ export default function PaymentModal({
                     }
 
                     setStep("failed");
-                    setErrorMsg( intent.attributes.last_payment_error?.failed_message ??  "Payment was not successful.");
+                    setErrorMsg(intent.attributes.last_payment_error?.failed_message ?? "Payment was not successful.");
                 }
             } catch (err) {
                 console.log("[PAYMENT] Poll failed:", err);
@@ -172,34 +172,42 @@ export default function PaymentModal({
 
     const handleQRPhPay = async () => {
         setIsProcessing(true);
-        setErrorMsg('');
+        setErrorMsg("");
+
         try {
             const methodId = await createQRPhPaymentMethod(billing);
             const intent = await attachPaymentMethod(intentId, methodId, clientKey, returnUrl);
+
+            console.log("[QRPH] Intent after attach:", intent);
+
             const status = intent.attributes.status;
             const next = intent.attributes.next_action;
 
-            if (status === 'succeeded') {
-                setStep('success');
+            if (status === "succeeded") {
+                setStep("success");
                 onSuccess();
                 return;
             }
 
-            if (status === 'awaiting_next_action' && next) {
+            if (status === "awaiting_next_action") {
                 const qrImage = getQRPhImageUrl(next);
+
                 if (qrImage) {
                     setEWalletUrl(qrImage);
-                    setStep('qrph');
+                    setStep("qrph");
                     return;
                 }
+
+                console.log("[QRPH] Missing QR image. next_action:", next);
+                setErrorMsg("QR Ph code was not returned by PayMongo.");
+                return;
             }
 
-            setErrorMsg('Failed to generate QR code. Please try again or choose a different payment method.');
-       
-            return;
-
+            console.log("[QRPH] Unexpected status:", status, intent);
+            setErrorMsg("Failed to generate QR code. Please try again.");
         } catch (err: any) {
-            setErrorMsg(err?.response?.data?.errors?.[0]?.detail ?? 'QR Ph failed.');
+            console.log("[QRPH] Error:", err?.response?.data ?? err);
+            setErrorMsg(err?.response?.data?.errors?.[0]?.detail ?? "QR Ph failed.");
         } finally {
             setIsProcessing(false);
         }
