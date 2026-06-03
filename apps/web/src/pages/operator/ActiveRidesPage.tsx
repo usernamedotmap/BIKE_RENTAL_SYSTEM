@@ -14,6 +14,7 @@ const ActiveRidesPage = () => {
     const queryClient = useQueryClient();
     const [search, setSearch] = useState('');
     const [actionError, setActionError] = useState('');
+    const [pendingAction, setPendingAction] = useState<string | null>(null);
 
     const { data: activeData, isLoading: loadingActive } = useReservations({ status: 'active', limit: 50 });
     const { data: confirmedData, isLoading: loadingConfirmed } = useReservations({ status: 'confirmed', limit: 50 });
@@ -33,6 +34,10 @@ const ActiveRidesPage = () => {
         ) : allReservations;
 
     const handleStarItem = (reservationId: string, itemId: string) => {
+        const actionKey = `start:${itemId}`;
+        if (pendingAction) return;
+
+        setPendingAction(actionKey);
         setActionError('');
         //  using mutation directly
         const api = async () => {
@@ -47,18 +52,22 @@ const ActiveRidesPage = () => {
         api();
     };
 
-    const handleCompleteItem = (reservationId: string, itemId: string) => {
-        setActionError('');
-        const api = async () => {
-            try {
-                const { api: axiosApi } = await import('@/lib/axios');
-                await axiosApi.patch(`/reservation/${reservationId}/complete-item`, { itemId });
-                queryClient.invalidateQueries({ queryKey: ['reservations'] });
-            } catch (err: any) {
-                setActionError(err?.response?.data?.error?.message ?? 'Failed to complete item');
-            }
-        };
-        api();
+    const handleCompleteItem = async (reservationId: string, itemId: string) => {
+        const actionKey = `complete:${itemId}`;
+        if (pendingAction) return;
+
+        setPendingAction(actionKey);
+        setActionError("");
+
+        try {
+            const { api: axiosApi } = await import("@/lib/axios");
+            await axiosApi.patch(`/reservation/${reservationId}/complete-item`, { itemId });
+            await queryClient.invalidateQueries({ queryKey: ["reservations"] });
+        } catch (err: any) {
+            setActionError(err?.response?.data?.error?.message ?? "Failed to complete item");
+        } finally {
+            setPendingAction(null);
+        }
     };
 
     return (
@@ -194,6 +203,7 @@ const ActiveRidesPage = () => {
                                                     {item.status === 'waiting' && (
                                                         <Button
                                                             size='sm'
+                                                            disabled={!!pendingAction}
                                                             onClick={() => handleStarItem(reservation._id, item._id)}>
                                                             <Play size={14} />
                                                             Start
@@ -202,6 +212,7 @@ const ActiveRidesPage = () => {
                                                     {(item.status === 'active' || item.status === 'overdue') && (
                                                         <Button
                                                             size='sm'
+                                                            disabled={!!pendingAction}
                                                             variant={item.status === 'overdue' ? 'danger' : 'secondary'}
                                                             onClick={() => handleCompleteItem(reservation._id, item._id)}>
                                                             <CheckCircle size={14} />

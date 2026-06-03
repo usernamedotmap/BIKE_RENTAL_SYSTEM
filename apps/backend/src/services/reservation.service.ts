@@ -518,7 +518,7 @@ export const completeReservationItem = async (
   const item = reservation.items.find((i) => String(i._id) === itemId);
   if (!item) throw Errors.notFound("Reservation item");
 
-  if (!["active", "overdue"].includes(reservation.status)) {
+  if (!["active", "overdue"].includes(item.status)) {
     throw Errors.badRequest(
       `This bike is "${item.status}". Only active or overdue bikes can be completed.`,
     );

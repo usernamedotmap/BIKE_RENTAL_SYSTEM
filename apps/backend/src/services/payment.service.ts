@@ -74,7 +74,9 @@ export const initializePayment = async (
   }
 
   // create paymongo payment intent -----
- const allowedMethods = ENV.IS_PROD ? ["qrph"] : ["gcash", "paymaya", "card", "qrph"];
+  const allowedMethods = ENV.IS_PROD
+    ? ["qrph"]
+    : ["gcash", "paymaya", "card", "qrph"];
 
   const response = await paymongoClient.post("/payment_intents", {
     data: {
@@ -83,7 +85,7 @@ export const initializePayment = async (
         payment_method_allowed: allowedMethods, // for now allow all methods - let user choose in paymongo UI
         currency: "PHP",
         description: `VeloRent booking ${reservationId}`,
-        statement_descriptor: "VELORENT", 
+        statement_descriptor: "VELORENT",
         metadata: {
           reservationId: String(reservationId),
           userId,
@@ -301,6 +303,19 @@ export const processRefund = async (paymentId: string): Promise<void> => {
   const intent = intentResponse.data.data;
   const payments = intent.attributes.payments as any[];
 
+  console.log("[PAYMONGO] Created intent:", {
+    id: intent.id,
+    livemode: intent.attributes.livemode,
+    clientKey: intent.attributes.client_key,
+    allowed: intent.attributes.payment_method_allowed,
+  });
+  console.log("[PAYMONGO] Created intent:", {
+    id: intent.id,
+    livemode: intent.attributes.livemode,
+    clientKey: intent.attributes.client_key,
+    allowed: intent.attributes.payment_method_allowed,
+  });
+  
   if (!payments || payments.length === 0) {
     throw Errors.internal("No payment found on this intent to refund.");
   }

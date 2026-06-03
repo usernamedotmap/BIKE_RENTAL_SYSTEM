@@ -145,6 +145,14 @@ export default function PaymentModal({
                 intentId, methodId, clientKey, returnUrl
             );
 
+            console.log("[QRPH] Attach response:", {
+                intentId: intent.id,
+                status: intent.attributes.status,
+                livemode: intent.attributes.livemode,
+                allowed: intent.attributes.payment_method_allowed,
+                nextAction: intent.attributes.next_action,
+            });
+
             const status = intent.attributes.status;
 
             if (status === 'succeeded') {
@@ -197,12 +205,12 @@ export default function PaymentModal({
                     return;
                 }
 
-          
+
                 setErrorMsg("QR Ph code was not returned by PayMongo.");
                 return;
             }
 
-           
+
             setErrorMsg("Failed to generate QR code. Please try again.");
         } catch (err: any) {
             console.log("[QRPH] Error:", err?.response?.data ?? err);
