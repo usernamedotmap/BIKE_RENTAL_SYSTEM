@@ -178,7 +178,6 @@ export default function PaymentModal({
             const methodId = await createQRPhPaymentMethod(billing);
             const intent = await attachPaymentMethod(intentId, methodId, clientKey, returnUrl);
 
-            console.log("[QRPH] Intent after attach:", intent);
 
             const status = intent.attributes.status;
             const next = intent.attributes.next_action;
@@ -198,12 +197,12 @@ export default function PaymentModal({
                     return;
                 }
 
-                console.log("[QRPH] Missing QR image. next_action:", next);
+          
                 setErrorMsg("QR Ph code was not returned by PayMongo.");
                 return;
             }
 
-            console.log("[QRPH] Unexpected status:", status, intent);
+           
             setErrorMsg("Failed to generate QR code. Please try again.");
         } catch (err: any) {
             console.log("[QRPH] Error:", err?.response?.data ?? err);
