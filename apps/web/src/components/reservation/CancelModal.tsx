@@ -17,8 +17,12 @@ export default function CancelModal({ reservationId, onClose, onSuccess }: Props
     const apiError = (error as any)?.response?.data?.error?.message;
 
     const handleCancel = () => {
+        if (isPending) return;
         if (!reason.trim()) return;
-        mutate(reason, { onSuccess })
+        mutate(reason.trim(), { onSuccess: () => {
+            onSuccess();
+            onClose();
+        } })
     };
 
     return (
@@ -37,7 +41,8 @@ export default function CancelModal({ reservationId, onClose, onSuccess }: Props
                         </h3>
                     </div>
                     <button
-                        onClick={handleCancel}
+                        onClick={onClose}
+                        disabled={isPending}
                         className="text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors">
                         <X size={20} />
                     </button>
@@ -82,7 +87,7 @@ export default function CancelModal({ reservationId, onClose, onSuccess }: Props
                         variant="danger"
                         fullWidth
                         loading={isPending}
-                        disabled={!reason.trim()}
+                        disabled={!reason.trim() || isPending}
                         onClick={handleCancel}>
                         Cancel Reservation
                     </Button>
