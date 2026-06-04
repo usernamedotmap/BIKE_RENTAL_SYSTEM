@@ -40,7 +40,6 @@ export default function Step4Payment({ setIsIntentionallyLeaving }: { setIsInten
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
     const [backendStatus, setBackendStatus] = useState<string | null>(null);
-    const [showPaymentModal, setShowPaymentModal] = useState(false);
 
     const { mutate: cancelReservation } = useCancelReservation(reservationId ?? '');
 
@@ -91,8 +90,7 @@ export default function Step4Payment({ setIsIntentionallyLeaving }: { setIsInten
     };
 
     const handleClosePayment = () => {
-        setShowPaymentModal(false);
-
+        setShowModal(false);
         if (paymentStatus === 'processing') {
             setPaymentStatus('initiated');
         }
@@ -307,7 +305,7 @@ export default function Step4Payment({ setIsIntentionallyLeaving }: { setIsInten
                     reservationId={reservationId}
                     onClose={handleClosePayment}
                     onSuccess={() => {
-                        setShowPaymentModal(false);
+                        setShowModal(false);
                         setPaymentStatus('completed');
                      
                         handleSuccess();
