@@ -23,10 +23,9 @@ import { initCronJobs } from "./services/cron.service";
 import adminRoutes from "./routes/admin.route";
 import { initSocket } from "./config/socket";
 import notificationRoutes from "./routes/notificationEvent.route";
-import conRoutes from "./routes/cron.route";
 import { verifyMailer } from "./config/mailer";
 import { getMqttClient } from "./config/mqtt";
-
+import userRoutes from "./routes/user.route";
 
 const app = express();
 const PATH = ENV.BASE_PATH;
@@ -37,7 +36,7 @@ app.use(helmetConfig);
 // cors here
 app.use(
   cors({
-    origin: ORIGIN,
+    origin: ENV.IS_PROD ? "" : ORIGIN,
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
@@ -76,6 +75,8 @@ app.use(globalLimiter);
 //csrf protection
 // app.use(crsfProtection);
 
+// user
+app.use(`${PATH}/user`, userRoutes);
 // auth
 app.use(`${PATH}/auth`, authRoutes);
 // admin
@@ -87,13 +88,7 @@ app.use(`${PATH}/reservation`, reservationRoutes);
 // payment
 app.use(`${PATH}/payment`, paymentRoutes);
 // notification
-
-app.use(`${PATH}/notifications`, notificationRoutes)
-// cron
-app.use(`${PATH}/cron`, conRoutes);
-
 app.use(`${PATH}/notifications`, notificationRoutes);
-
 
 app.get("/api/health", (req, res) => {
   res.json({
