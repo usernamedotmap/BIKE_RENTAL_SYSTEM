@@ -74,18 +74,20 @@ export const initializePayment = async (
   }
 
   // create paymongo payment intent -----
-  const allowedMethods = ENV.IS_PROD
-    ? ["qrph"]
-    : ["gcash", "paymaya", "card", "qrph"];
+  const paymentMethodMap: Record<string, string[]> = {
+    gcash: ["gcash"],
+    paymaya: ["paymaya"],
+    card: ["card"],
+  };
 
   const response = await paymongoClient.post("/payment_intents", {
     data: {
       attributes: {
         amount: reservation.baseCost,
-        payment_method_allowed: allowedMethods, // for now allow all methods - let user choose in paymongo UI
+        payment_method_allowed: ["gcash", "paymaya", "card", "qrph"], // for now allow all methods - let user choose in paymongo UI
         currency: "PHP",
         description: `VeloRent booking ${reservationId}`,
-        statement_descriptor: "VELORENT",
+        statement_descriptor: "VELORENT", 
         metadata: {
           reservationId: String(reservationId),
           userId,
@@ -128,8 +130,8 @@ export const verifyWebhookSignature = async (
 ): Promise<boolean> => {
   try {
     // PayMongo signature format: "t=timestamp,te=hash,li=hash"
-    const secretKey = ENV.PAYMONGO_WEBHOOK_SECRET;
-
+    const isProd = ENV.PAYMONGO_WEBHOOK_SECRET
+   
     const parts = signature.split(",");
     const timestamp = parts.find((p) => p.startsWith("t="))?.split("=")[1];
     const hash = parts.find((p) => p.startsWith("te="))?.split("=")[1];
@@ -141,7 +143,7 @@ export const verifyWebhookSignature = async (
 
     //compute expected signature
     const expected = crypto
-      .createHmac("sha256", secretKey)
+      .createHmac("sha256", isProd)
       .update(singedPayload)
       .digest("hex");
 
@@ -303,19 +305,6 @@ export const processRefund = async (paymentId: string): Promise<void> => {
   const intent = intentResponse.data.data;
   const payments = intent.attributes.payments as any[];
 
-  console.log("[PAYMONGO] Created intent:", {
-    id: intent.id,
-    livemode: intent.attributes.livemode,
-    clientKey: intent.attributes.client_key,
-    allowed: intent.attributes.payment_method_allowed,
-  });
-  console.log("[PAYMONGO] Created intent:", {
-    id: intent.id,
-    livemode: intent.attributes.livemode,
-    clientKey: intent.attributes.client_key,
-    allowed: intent.attributes.payment_method_allowed,
-  });
-  
   if (!payments || payments.length === 0) {
     throw Errors.internal("No payment found on this intent to refund.");
   }
