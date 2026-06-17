@@ -237,10 +237,10 @@ export const createWalkInReservation = async (
       notes,
     });
 
-    const emits = await createDashboardNotifcation({
+        const emits = await createDashboardNotifcation({
       recipientRole: "both",
       event: "new_reservation",
-      title: "🚲 New Online Reservation",
+      title: "🚲 New Walk-In Reservation",
       message: `New booking for ${validBikeIds.length} bike${validBikeIds.length > 1 ? "s" : ""} — ${slotHours}hr slot`,
       reservationId: String(reservation._id),
       metadata: { bikeCount: validBikeIds.length },
@@ -518,7 +518,7 @@ export const completeReservationItem = async (
   const item = reservation.items.find((i) => String(i._id) === itemId);
   if (!item) throw Errors.notFound("Reservation item");
 
-  if (!["active", "overdue"].includes(item.status)) {
+  if (!["active", "overdue"].includes(reservation.status)) {
     throw Errors.badRequest(
       `This bike is "${item.status}". Only active or overdue bikes can be completed.`,
     );
@@ -571,10 +571,10 @@ export const completeReservationItem = async (
     );
 
     reservation.totalCost = reservation.baseCost + totalOverdue;
-
-    // Queue completion notifications
+   
+// Queue completion notifications
     const user = await User.findById(reservation.userId);
-    if (user) {
+    if (user && reservation.channel === "online") { // <--- Add channel condition here
       const { queueRideCompletedNotification } =
         await import("./notification.service");
       await queueRideCompletedNotification(reservation, user as any);
